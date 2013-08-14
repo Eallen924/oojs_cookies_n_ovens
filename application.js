@@ -1,12 +1,3 @@
-// Your JavaScript here
-// we need a cookie object with attributes of type, cooktime, baketime
-// add cookie object to prep table 
-// each cookie will be a <li>
-// what is the doneness level of my cookie?
-// what batches of cookies are in my oven
-// what type of cookie am i?
-
-
 function Cookie(cookieType, bakeTime){
   this.cookieType = cookieType;
   this.bakeTime = bakeTime;
@@ -37,31 +28,52 @@ var PrepTable = {
 
   addToTable: function(cookie){
     this.tableArray.push(cookie)
+  },
+
+  render: function(cookie){
+    var button = "<button id='add_to_oven'>Add to Oven</button>"
+    $('#prep_batches').append("<li >" + cookie.cookieType + button + "</li>")
   }
+
 };
 
 var CreateBatch = function(tray){
-  var type = tray.find("input[name='batch_type']").val();
-  var time = tray.find("input[name='bake_time']").val();
-  var cookie = new Cookie(type, time);
-  var button = "<button id='add_to_oven'>Add to Oven</button>"
-  $('#prep_batches').append("<li>" + cookie.cookieType + button + "</li>")
-
+  var cookie = new Cookie(tray.type(), tray.time());
+  PrepTable.render(cookie)
   PrepTable.addToTable(cookie);
+  tray.clear();
+
 };
+
+var Tray = function($tray){
+  this.$tray = $tray
+}
+
+Tray.prototype.type = function(){
+  return this.$tray.find("input[name='batch_type']").val();     
+}
+
+Tray.prototype.time = function(){
+  return this.$tray.find("input[name='bake_time']").val();     
+}
+
+Tray.prototype.clear = function(){
+  this.$tray.find("input[name='batch_type']").val('');     
+  this.$tray.find("input[name='bake_time']").val('');     
+}
 
 $(document).ready(function(){
   $('form').on('submit', function(event){
     event.preventDefault();
-    CreateBatch($(this));
+    CreateBatch(new Tray($(this)));
   });
 
-  $('#prep_batches').on('click', function(){
+  $('body').on('click', '#prep_batches li button', function(){
     console.log($(this).text());
   });
 });
 
-//prepTable delete function
-//take object off prepTable add it to oven
+// prepTable delete function
+// take object off prepTable add it to oven
 // bind to click events to add cookie to oven
 // bind to click events to cook cookies
